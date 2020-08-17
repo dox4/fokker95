@@ -1,6 +1,6 @@
-import parsers.Parser;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import parsers.Parser;
 import types.BinaryTuple;
 import types.ParserResult;
 

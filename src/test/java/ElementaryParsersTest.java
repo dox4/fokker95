@@ -116,6 +116,7 @@ public class ElementaryParsersTest {
         Assertions.assertEquals(0, failc.apply(input).size());
 
     }
+
     @Test
     public void testEpsilonSucceedFail() {
         List<Character> input = TestUtil.basicChars();
