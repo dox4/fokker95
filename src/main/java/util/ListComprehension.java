@@ -1,6 +1,8 @@
 package util;
 
+import func.BinaryOperator;
 import func.Bool;
+import types.OperandTuple;
 import types.ParserResult;
 
 import java.util.ArrayList;
@@ -14,6 +16,10 @@ public class ListComprehension {
 
     public static <T> List<T> tail(List<T> list) {
         return list.subList(1, list.size());
+    }
+
+    public static <T> List<T> init(List<T> list) {
+        return list.subList(0, list.size() - 1);
     }
 
     public static <T> T last(List<T> list) {
@@ -61,4 +67,17 @@ public class ListComprehension {
                 ? dropWhile(bool, tail(input))
                 : input);
     }
+
+    public static <T> T foldl(BinaryOperator<T> op, T from, List<T> values) {
+        return values.size() == 0 ? from : foldl(op, op.apply(from, head(values)), tail(values));
+    }
+
+    public static <T> T foldr(BinaryOperator<T> op, T from, List<T> values) {
+        return values.size() == 0 ? from : foldr(op, op.apply(last(values), from), init(values));
+    }
+
+    public static <T> T ap2(OperandTuple<T> op, T value) {
+        return op.getOp().apply(value, op.getOperand());
+    }
+
 }

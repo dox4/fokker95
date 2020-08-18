@@ -6,15 +6,24 @@ import parsers.Parser;
 import transformers.DeterministicParser;
 import types.ParserResult;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
+import static examples.Combinators.many;
 import static util.ListComprehension.dropWhile;
 import static util.ListComprehension.head;
 
 public class Transformers {
-    private static Bool<Character> isDigit = (c) -> (c >= '0' && c <= '9');
+    private static final Bool<Character> isDigit = (c) -> (c >= '0' && c <= '9');
+    private static final Bool<Character> isAlpha = Character::isAlphabetic;
     public static Parser<Character, Integer> digit = apply(ElementaryParsers.satisfy(isDigit), c -> c - '0');
-
+    public static Parser<Character, Character> alpha = ElementaryParsers.satisfy(isAlpha);
+    public static String toWord(List<Character> alphas) {
+        StringBuilder sb = new StringBuilder();
+        alphas.forEach(sb::append);
+        return sb.toString();
+    }
+    public static Parser<Character, String> word = apply(many(alpha), Transformers::toWord);
     /**
      * drop spaces from the input
      * and then applies a given parser
