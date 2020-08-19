@@ -2,14 +2,14 @@ package types;
 
 import lombok.Data;
 
-import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
 
 @Data
 public class OperandTuple<T> {
-    BiFunction<T, T, T> op;
+    BinaryOperator<T> op;
     T operand;
 
-    public OperandTuple(BiFunction<T, T, T> op, T v) {
+    public OperandTuple(BinaryOperator<T> op, T v) {
         this.op = op;
         this.operand = v;
     }

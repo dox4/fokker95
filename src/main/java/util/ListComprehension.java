@@ -1,13 +1,14 @@
 package util;
 
-import func.BinaryOperator;
 import func.Bool;
+import func.Function2;
 import types.OperandTuple;
 import types.ParserResult;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.BiFunction;
 
 public class ListComprehension {
     public static <T> T head(List<T> list) {
@@ -68,16 +69,29 @@ public class ListComprehension {
                 : input);
     }
 
-    public static <T> T foldl(BinaryOperator<T> op, T from, List<T> values) {
+    public static <T1, T2> T1 foldl(BiFunction<T1, T2, T1> op, T1 from, List<T2> values) {
         return values.size() == 0 ? from : foldl(op, op.apply(from, head(values)), tail(values));
     }
 
-    public static <T> T foldr(BinaryOperator<T> op, T from, List<T> values) {
+    public static <T1, T2> T1 foldr(BiFunction<T2, T1, T1> op, T1 from, List<T2> values) {
         return values.size() == 0 ? from : foldr(op, op.apply(last(values), from), init(values));
+    }
+
+    public static <T> T ap1(OperandTuple<T> op, T value) {
+        return op.getOp().apply(op.getOperand(), value);
     }
 
     public static <T> T ap2(OperandTuple<T> op, T value) {
         return op.getOp().apply(value, op.getOperand());
     }
+
+//    public static <T> Function1<T, T> ap2(BinaryTuple<BinaryOperator<T>, T> tuple) {
+//        return x -> tuple.getA().apply(x, tuple.getB());
+//    }
+
+    public static <T> Function2<T, T, OperandTuple<T>> flip(Function2<T, OperandTuple<T>, T> func) {
+        return (x, y) -> func.apply(y, x);
+    }
+
 
 }

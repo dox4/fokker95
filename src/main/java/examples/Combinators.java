@@ -2,15 +2,18 @@ package examples;
 
 import combinators.AltParser;
 import combinators.SeqParser;
-import func.BinaryOperator;
+import func.Function2;
 import parsers.Parser;
 import types.BinaryTuple;
+import types.OperandTuple;
 import types.ParserResult;
 import util.ListComprehension;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.BiFunction;
+import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 
 import static examples.ElementaryParsers.succeed;
@@ -145,11 +148,15 @@ public class Combinators {
         return alt(seqList(p, many(seqB(s, p))), succeed(new ArrayList<>()));
     }
 
-//    public static <S, R> Parser<S, R> chainLeft(Parser<S, R> p, Parser<S, BinaryOperator<R>> s) {
-//        Parser<S, BinaryTuple<BinaryOperator<R>, R>> seq = seq(s, p);
-//        Parser<S, List<BinaryTuple<BinaryOperator<R>, R>>> many = many(seq);
-//        Parser<S, BinaryTuple<R, List<BinaryTuple<BinaryOperator<R>, R>>>> seq1 = seq(p, many);
-//        apply(seq1, r -> )
-//    }
+    public static <S, R> Parser<S, R> chainLeft(Parser<S, R> p, Parser<S, BinaryOperator<R>> s) {
+        Parser<S, BinaryTuple<BinaryOperator<R>, R>> seq = seq(s, p);
+        Parser<S, List<BinaryTuple<BinaryOperator<R>, R>>> many = many(seq);
+        Parser<S, BinaryTuple<R, List<BinaryTuple<BinaryOperator<R>, R>>>> seq1 = seq(p, many);
+        return xs -> apply(seq1, r -> ListComprehension.foldl(Combinators::func, r.getA(), r.getB())).apply(xs);
+    }
+
+    public static <R> R func(R from, BinaryTuple<BinaryOperator<R>, R> op) {
+        return op.getA().apply(from, op.getB());
+    }
 
 }

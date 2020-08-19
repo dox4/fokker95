@@ -1,7 +1,4 @@
-import combinators.ManyCombinator;
-import combinators.OptionCombinator;
 import examples.Transformers;
-import func.BinaryOperator;
 import func.Converter;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -12,6 +9,7 @@ import util.ListComprehension;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.BinaryOperator;
 
 import static examples.Combinators.*;
 import static examples.ElementaryParsers.*;
