@@ -2,17 +2,14 @@ package examples;
 
 import combinators.AltParser;
 import combinators.SeqParser;
-import func.Function2;
 import parsers.Parser;
 import types.BinaryTuple;
-import types.OperandTuple;
 import types.ParserResult;
 import util.ListComprehension;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.BiFunction;
 import java.util.function.BinaryOperator;
 import java.util.stream.Collectors;
 
@@ -148,15 +145,27 @@ public class Combinators {
         return alt(seqList(p, many(seqB(s, p))), succeed(new ArrayList<>()));
     }
 
+    // chainl :: Parser s a -> Parser s (a->a->a) -> Parser s a
     public static <S, R> Parser<S, R> chainLeft(Parser<S, R> p, Parser<S, BinaryOperator<R>> s) {
         Parser<S, BinaryTuple<BinaryOperator<R>, R>> seq = seq(s, p);
         Parser<S, List<BinaryTuple<BinaryOperator<R>, R>>> many = many(seq);
         Parser<S, BinaryTuple<R, List<BinaryTuple<BinaryOperator<R>, R>>>> seq1 = seq(p, many);
-        return xs -> apply(seq1, r -> ListComprehension.foldl(Combinators::func, r.getA(), r.getB())).apply(xs);
+        return xs -> apply(seq1, r -> ListComprehension.foldl(Combinators::infix1, r.getA(), r.getB())).apply(xs);
     }
 
-    public static <R> R func(R from, BinaryTuple<BinaryOperator<R>, R> op) {
+    public static <S, R> Parser<S, R> chainRight(Parser<S, R> p, Parser<S, BinaryOperator<R>> s) {
+        Parser<S, BinaryTuple<R, BinaryOperator<R>>> seq = seq(p, s);
+        Parser<S, List<BinaryTuple<R, BinaryOperator<R>>>> many = many(seq);
+        Parser<S, BinaryTuple<List<BinaryTuple<R, BinaryOperator<R>>>, R>> seq1 = seq(many, p);
+        return xs -> apply(seq1, r -> ListComprehension.foldr(Combinators::infix2, r.getB(), r.getA())).apply(xs);
+    }
+
+    public static <R> R infix1(R from, BinaryTuple<BinaryOperator<R>, R> op) {
         return op.getA().apply(from, op.getB());
+    }
+
+    public static <R> R infix2(BinaryTuple<R, BinaryOperator<R>> op, R from) {
+        return op.getB().apply(op.getA(), from);
     }
 
 }

@@ -69,4 +69,5 @@ public class Transformers {
     public static <S, R> DeterministicParser<S, R> some(Parser<S, R> p) {
         return xs -> head(just(p).apply(xs)).getResult();
     }
+
 }

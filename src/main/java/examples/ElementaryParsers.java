@@ -1,6 +1,7 @@
 package examples;
 
 import func.Bool;
+import func.Converter;
 import parsers.*;
 import types.ParserResult;
 import types.ZeroTuple;
@@ -8,6 +9,9 @@ import types.ZeroTuple;
 import java.util.ArrayList;
 import java.util.List;
 
+import static examples.Combinators.many;
+import static examples.Transformers.apply;
+import static examples.Transformers.digit;
 import static util.ListComprehension.*;
 
 public class ElementaryParsers {
@@ -110,6 +114,14 @@ public class ElementaryParsers {
 
     public static <S, R> List<ParserResult<S, R>> fail(List<S> input) {
         return new ArrayList<>();
+    }
+
+
+    public static List<ParserResult<Character, Integer>> natual(List<Character> input) {
+        Parser<Character, List<Integer>> manyDigit = many(digit);
+        Converter<List<Integer>, Integer> accu = arr -> arr.stream().reduce(0, (x, y) -> x * 10 + y);
+        Parser<Character, Integer> natural = apply(manyDigit, accu);
+        return natural.apply(input);
     }
 }
 
